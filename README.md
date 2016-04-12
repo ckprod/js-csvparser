@@ -1,5 +1,7 @@
 # js-csvparser (Javascript CSV Parser)
-======================================
+=======================================
+
+[![Build Status](https://travis-ci.org/irhc/js-csvparser.png?branch=master)](https://travis-ci.org/irhc/js-csvparser)
 
 Fast and feature rich CSV parser with great auto detection for line ending and delimiter. It can be used as node module or in the browser. It is completely independent from other javascript libraries but should work side-by-side with any other library like jQuery,etc.
 
