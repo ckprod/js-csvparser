@@ -43,19 +43,12 @@ Current version should work with all Node.js versions, at least with version 4.8
 - convert (default false): 	If true, numeric and boolean data will be converted to their type instead of remaining strings. Numeric data must conform to the definition of a decimal literal. (European-formatted numbers must have commas and dots swapped.)
 - skipEmptyLines (default false): If true, lines that are completely empty will be skipped. An empty line is defined to be one which evaluates to empty string.
 
-###Speed
-
-TESTS
-- TODO
-
-
 ###References
 
 Several other good csvparser with slightly different features were used as guideline:
 
 - [papaparse](https://github.com/mholt/PapaParse)
 - [ya-csv](https://github.com/koles/ya-csv)
-- []
 
 ### Licence
 
