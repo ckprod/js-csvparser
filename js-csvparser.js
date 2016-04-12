@@ -241,4 +241,4 @@
 
 })();
 
-console.log(module.exports.csvparse('\r\na,b,c\r\nd,e,f', {skipEmptyLines: true}));
+//console.log(module.exports.csvparse('1,2.2,1e3\r\n-4,-4.5,-4e-5\r\n-,5a,5-2', {convert: true}));

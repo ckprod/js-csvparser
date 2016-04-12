@@ -104,6 +104,7 @@ var CSVPARSER_TESTS = [
 	{
 		description: "Dynamic typing converts numeric literals",
 		input: '1,2.2,1e3\r\n-4,-4.5,-4e-5\r\n-,5a,5-2',
+		config: { convert: true },
 		expected: {
 			data: [[1, 2.2, 1000], [-4, -4.5, -0.00004], ["-", "5a", "5-2"]],
 			errors: []
@@ -112,7 +113,7 @@ var CSVPARSER_TESTS = [
 	{
 		description: "Dynamic typing converts boolean literals",
 		input: 'true,false,T,F,TRUE,FALSE,True,False',
-        config: { transform: true },
+        config: { convert: true },
 		expected: {
 			data: [[true, false, "T", "F", true, false, "True", "False"]],
 			errors: []
@@ -121,6 +122,7 @@ var CSVPARSER_TESTS = [
 	{
 		description: "Dynamic typing doesn't convert other types",
 		input: 'A,B,C\r\nundefined,null,[\r\nvar,float,if',
+		config: { convert: true },
 		expected: {
 			data: [["A", "B", "C"], ["undefined", "null", "["], ["var", "float", "if"]],
 			errors: []
