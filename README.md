@@ -1,5 +1,5 @@
-# js-csvparser (Javascript CSV Parser)
-=======================================
+js-csvparser (Javascript CSV Parser)
+========================================
 
 [![Build Status](https://travis-ci.org/irhc/js-csvparser.png?branch=master)](https://travis-ci.org/irhc/js-csvparser)
 
