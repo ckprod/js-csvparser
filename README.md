@@ -21,7 +21,7 @@ If you don't want to use default options, pass in an options object as second pa
 ```html
 npm install js-csvparser
 ```
-Current version should work with all Node.js versions, at least with version 4.8 and above.
+Current version should work with all Node.js versions, at least with version 4 and above.
 
 ###Features
 
