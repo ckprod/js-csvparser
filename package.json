@@ -1,7 +1,21 @@
 {
 	"name": "js-csvparser",
-	"version": "1.0.0",
 	"description": "Fast and feature rich CSV parser with great auto detection for line ending and delimiter.",
+	"maintainers": "irhc <irhc@openmailbox.org>",
+	"homepage": "https://github.com/irhc/js-csvparser",
+	"version": "1.0.0",
+	"author": "irhc <irhc@openmailbox.org>",
+	"license": "MIT",
+	"dependencies": {
+		"moment": "^2.13.0"
+	},
+	"devDependencies": {
+		"mocha": "^2.4.5"
+	},
+	"scripts": {
+		"test": "mocha"
+	},
+	"main": "js-csvparser.js",
 	"keywords": [
 		"csv",
 		"parser",
@@ -13,22 +27,11 @@
 		"auto-detect",
 		"comma"
 	],
+	"engines": {
+		"node": ">= 4.0"
+	},
 	"repository": {
-		"type": "git",
-		"url": "https://github.com/irhc/js-csvparser.git"
-	},
-	"author": "irhc",
-	"licenses": [
-		{
-			"type": "MIT",
-			"url": "http://opensource.org/licenses/MIT"
-		}
-	],
-	"main": "js-csvparser.js",
-	"devDependencies": {
-		"mocha": "^2.4.5"
-	},
-	"scripts": {
-		"test": "mocha"
+		"type": "svn",
+		"url": "https://github.com/irhc/js-csvparser"
 	}
 }
