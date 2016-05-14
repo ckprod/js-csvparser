@@ -11,7 +11,7 @@ Fast and feature rich CSV parser with great auto detection for line ending and d
 // A simple echo program:
 const csvparse = require('js-csvparser');
 
-console.log(csvparse('\r\na,b,c\r\nd,e,f', {skipEmptyLines: true}));
+console.log(csvparse('\r\na,b,c\r\nd,e,f'));
 ```
 
 If you don't want to use default options, pass in an options object as second parameter.
@@ -56,30 +56,51 @@ Current version should work with all Node.js versions, at least with version 4 a
 
 ###Options
 
-- delimiter (default auto): Specify the delimiter for each cell. Leave blank to auto-detect. If specified, it must be a string of length 1.
-- lineEnding (default auto): Specify the line ending character. Leave blank to auto-detect. If specified, it must be one of  \r, \n, or \r\n.
-- comment (default #): Specify the escape character. Lines starting with this string will be skipped. If specified, it must be a string of length 1.
-- convertToTypes (default false): If true, numeric, boolean and date data will be converted to their type instead of remaining strings. 
-- skipEmptyLines (default false): If true, lines that are completely empty will be skipped. An empty line is defined to be one which evaluates to empty string.
-- maxRows (default 0): Limit the number of parsed lines, 0 means no limit (e.g. parse the whole file).
-- maxColumns (default -1): Limit the number of parsed columns, -1 means no limit (e.g. parse all columns). If the suboption cutRemaining (default false) is false, the last valid column will contain the remaining data of the row, otherwise the remaining data of the row will be cutoff.
-
-You can set different options for parsing the data. The default options and descriptions are as follows:
+You can set different options for parsing the data.
 ```javascript
 let defaultOptions = {
-    delimiter: 'auto', // Specify the delimiter for each cell. Leave blank to auto-detect. If specified, it must be a string of length 1.
-    lineEnding: 'auto', // Specify the line ending character. Leave blank to auto-detect. If specified, it must be one of  \r, \n, or \r\n.
-    comment: '#', // Specify the escape character. Lines starting with this string will be skipped. If specified, it must be a string of length 1.
+    // Specify the delimiter for each cell. Leave blank to auto-detect.
+    // If specified, it must be a string of length 1.
+    delimiter: 'auto',
+    
+    // Specify the line ending character. Leave blank to auto-detect. 
+    // If specified, it must be one of  \r, \n, or \r\n.
+    lineEnding: 'auto',
+    
+    // Specify the escape character. Lines starting with this string 
+    // will be skipped. If specified, it must be a string of length 1.
+    comment: '#', 
+    
     convertToTypes: {
-        convert: false, // If true, numeric, boolean and date data will be converted to their type instead of remaining strings. 
-        decimalDelimiter: 'auto', // Specify the decimal delimiter for converting numeric data. Leave blank to auto-detect. If specified, it must be '.' or ','.
-        dateFormat: 'YYYY-MM-DD' // Specify the date format.
+        // If true, numeric, boolean and date data will be converted
+        // to their type instead of remaining strings.
+        convert: false,
+        
+        // Specify the decimal delimiter for converting numeric data.
+        // Leave blank to auto-detect. If specified, it must be '.' or ','.
+        decimalDelimiter: 'auto',
+        
+        // Specify the date format according to moment.js.
+        dateFormat: 'YYYY-MM-DD'
     },
-    skipEmptyLines: false, // If true, lines that are completely empty will be skipped. An empty line is defined to be one which evaluates to empty string.
-    maxRows: 0, // Limit the number of parsed lines, 0 means no limit (e.g. parse the whole file).
+    // If true, lines that are completely empty will be skipped. An empty 
+    // line is defined to be one which evaluates to empty string.
+    skipEmptyLines: false,
+    
+    // Limit the number of parsed lines, 0 means no limit (e.g. parse the 
+    // whole file).
+    maxRows: 0,
+     
     maxColumns: {
-        numberOfColumns: -1, // Limit the number of parsed columns, -1 means no limit (e.g. parse all columns).
-        cutRemaining: false // If there is a column limit, specify how to procced with the remaining date of the row: If true, the last column of the output will contain the remaining data of the parsed row, otherwise the remaining data of the row will be omitted.
+        // Limit the number of parsed columns, -1 means no limit (e.g. parse 
+        // all columns).
+        numberOfColumns: -1,
+        
+        // If there is a column limit, specify how to procced with the 
+        // remaining date of the row: If true, the last column of the output 
+        // will contain the remaining data of the parsed row, otherwise the 
+        // remaining data of the row will be omitted.
+        cutRemaining: false
     }
 };
  ```
