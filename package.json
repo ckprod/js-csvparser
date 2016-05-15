@@ -3,7 +3,7 @@
 	"description": "Fast and feature rich CSV parser with great auto detection for line ending and delimiter.",
 	"maintainers": "irhc <irhc@openmailbox.org>",
 	"homepage": "https://github.com/irhc/js-csvparser",
-	"version": "1.1.0",
+	"version": "1.1.1",
 	"author": "irhc <irhc@openmailbox.org>",
 	"license": "MIT",
 	"dependencies": {
