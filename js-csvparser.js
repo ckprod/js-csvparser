@@ -313,7 +313,7 @@
     function findDecimal(output) {
         for (let i = 0; i < output.length; i++) {
             for (let j = 0; j < output[i].length; j++) {
-                if (/^[0-9.,' ،]+$/.test(output[i][j])) {
+                if (/^[0-9.,' ،-]+$/.test(output[i][j])) {
                     let delimiter = detectDecimalDelimiter(output[i][j]);
                     if (delimiter !== 'ambiguous') {
                         return delimiter;
@@ -359,7 +359,7 @@
             }
         }
 
-        if (options.transform) {
+        if (options.convertToTypes.convert) {
             if (options.convertToTypes.decimalDelimiter === 'auto') options.convertToTypes.decimalDelimiter = findDecimal(output);
             let reg;
             if (options.convertToTypes.decimalDelimiter === '.') {
@@ -380,7 +380,7 @@
                     } else if (/[0-9]{2}\.[0-9]{2}\./.test(value)) { // maybe a date, eg. 01.01.
                         ; // do nothing
                     } else {
-                        value = value.replace(reg, '').replace(options.convertToTypes.decimalDelimiter, '.');
+                        value = value.replace(reg, '').replace(/(.*)-/, "-$1").replace(options.convertToTypes.decimalDelimiter, '.');
                         if (!isNaN(Number(value))) { // Number
                             output[i][j] = Number(value);
                         } else { // String
