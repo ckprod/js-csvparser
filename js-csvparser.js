@@ -360,10 +360,9 @@
         }
 
         if (options.transform) {
-            let decimal = options.convertToTypes.decimalDelimiter;
-            if (options.convertToTypes.decimalDelimiter === 'auto') decimal = options.convertToTypes.decimalDelimiter = findDecimal(output);
+            if (options.convertToTypes.decimalDelimiter === 'auto') options.convertToTypes.decimalDelimiter = findDecimal(output);
             let reg;
-            if (decimal === '.') {
+            if (options.convertToTypes.decimalDelimiter === '.') {
                 reg = /[,' ،]/g;
             } else {
                 reg = /[\.' ،]/g;
@@ -381,7 +380,7 @@
                     } else if (/[0-9]{2}\.[0-9]{2}\./.test(value)) { // maybe a date, eg. 01.01.
                         ; // do nothing
                     } else {
-                        value = value.replace(reg, '').replace(decimal, '.');
+                        value = value.replace(reg, '').replace(options.convertToTypes.decimalDelimiter, '.');
                         if (!isNaN(Number(value))) { // Number
                             output[i][j] = Number(value);
                         } else { // String
