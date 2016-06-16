@@ -3,7 +3,7 @@
 'use strict';
 
 const assert = require('assert');
-const csvparse = require('../js-csvparser.js');
+const csvparse = require('../js-csvparser.umd.js');
 
 
 console.log(csvparse('31.12.2015;21689;01.01.;1.257,46-',{ convertToTypes: { convert: true, dateFormat: 'DD.MM.YYYY' } }));
@@ -675,9 +675,27 @@ var CSVPARSER_TESTS = [
 	{
 		description: 'Convert to types',
 		input: '31.12.2015;21689;01.01.;1.257,46-',
-		config: { convertToTypes: { convert: true, dateFormat: 'DD.MM.YYYY' } },
+		config: { convertToTypes: { convert: true, dateFormat: 'dd.mm.yyyy' } },
 		expected: {
-			data: [ [ new Date('2015-12-31'), 21689, '01.01.', -1257.46 ] ],
+			data: [ [ new Date(Date.UTC(2015,11,31)), 21689, '01.01.', -1257.46 ] ],
+			errors: []
+		}
+	},
+	{
+		description: 'Convert to types, full date format',
+		input: '31.12.2015 16:05:27;21689;01.01.;1.257,46-',
+		config: { convertToTypes: { convert: true, dateFormat: 'dd.mm.yyyy HH:MM:SS' } },
+		expected: {
+			data: [ [ new Date(Date.UTC(2015,11,31,16,5,27)), 21689, '01.01.', -1257.46 ] ],
+			errors: []
+		}
+	},
+	{
+		description: 'Convert to types, 2-digit year',
+		input: '31.12.15;21689;01.01.;1.257,46-',
+		config: { convertToTypes: { convert: true, dateFormat: 'dd.mm.yy' } },
+		expected: {
+			data: [ [ new Date(Date.UTC(2015,11,31)), 21689, '01.01.', -1257.46 ] ],
 			errors: []
 		}
 	}

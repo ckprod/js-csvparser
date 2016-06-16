@@ -1,9 +1,11 @@
 js-csvparser (Javascript CSV Parser)
 ========================================
 
+[![NPM version](http://img.shields.io/npm/v/js-csvparser.svg)](https://www.npmjs.org/package/js-csvparser)
+![](https://img.shields.io/badge/dependencies-none-brightgreen.svg)
 [![Build Status](https://travis-ci.org/irhc/js-csvparser.png?branch=master)](https://travis-ci.org/irhc/js-csvparser)
 
-Fast and feature rich CSV parser with great auto detection for line ending and delimiter. It can be used as node module or in the browser. It has only one dependency: the [Moment.js](http://momentjs.com/) library for converting formatted date strings to date objects.
+Fast and feature rich CSV parser with great auto detection for line ending and delimiter. It can be used as node module or in the browser. It has no dependency.
 
 ###Usage
 
@@ -24,7 +26,7 @@ let defaultOptions = {
     convertToTypes: {
         convert: false,
         decimalDelimiter: 'auto',
-        dateFormat: 'YYYY-MM-DD'
+        dateFormat: 'yyyy-mm-dd'
     },
     skipEmptyLines: false,
     maxRows: 0,
@@ -80,8 +82,16 @@ let defaultOptions = {
         // Leave blank to auto-detect. If specified, it must be '.' or ','.
         decimalDelimiter: 'auto',
         
-        // Specify the date format according to moment.js.
-        dateFormat: 'YYYY-MM-DD'
+        // Specify the date format using one of the following tokens:
+        // token| description       | example
+        // yyyy | 4 or 2 digit year | 2014
+        // yy 	| 2 digit year      |   14
+        // m mm | month number      | 1..12
+        // d dd	| day number        | 1..31
+        // H HH | 24 hour time      | 0..23
+        // M MM	| Minutes           | 0..59
+        // S SS | Seconds           | 0..59
+        dateFormat: 'yyyy-mm-dd'
     },
     // If true, lines that are completely empty will be skipped. An empty 
     // line is defined to be one which evaluates to empty string.

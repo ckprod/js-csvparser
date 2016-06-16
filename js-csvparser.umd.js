@@ -1,46 +1,154 @@
-;(function (global, factory) {
+(function (global, factory) {
     typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
     typeof define === 'function' && define.amd ? define(factory) :
-    global.moment = factory()
-}(this, function () {
-    'use strict';
-    
-    const moment = require('moment');
-    
-    const RECORD_SEP = String.fromCharCode(30);
-    const UNIT_SEP = String.fromCharCode(31);
+    (global.CSVParser = factory());
+}(this, function () { 'use strict';
 
-    function detectLineEnding(data) {
-        data = data.substr(0, 1024 * 1024);	// max length 1 MB
+    // util
+    // code snippets from https://github.com/moment/moment
+    function daysInMonth(year, month) {
+        return new Date(Date.UTC(year, month + 1, 0)).getUTCDate();
+    }
 
-        data = data.replace(/"[^"]*"/g, ''); // replace all quoted fields
+    function checkOverflow(year, month, day, hour, minute, second) {
+        if (month && (month < 0 || month > 11)) return true;
+        if (day && (day < 0 || day > daysInMonth(year, month))) return true;
+        if (hour && (hour < 0 || hour > 24 || (hour === 24 && (minute !== 0 || second !== 0)))) return true;
+        if (minute && (minute < 0 || minute > 59)) return true;
+        if (second && (second < 0 || second > 59)) return true;
 
-        //console.log(data);
+        return false;
+    }
 
-        let n = data.split('\n');
-        let r = data.split('\r');
-        let rn = data.split('\r\n');
+    function parseTwoDigitYear(input) {
+        return Number(input) + (Number(input) > 68 ? 1900 : 2000);
+    }
 
-        let arr = [{ type: '\n', data: n, length: n.length - rn.length }, { type: '\r', data: r, length: r.length - rn.length }, { type: '\r\n', data: rn, length: rn.length - 1 }];
-        arr.sort(function (a, b) {
-            return b.length - a.length;
-        });
+    // Code from http://stackoverflow.com/questions/3561493/is-there-a-regexp-escape-function-in-javascript
+    function unescapeFormat(s) {
+        return regexEscape(s.replace('\\', '').replace(/\\(\[)|\\(\])|\[([^\]\[]*)\]|\\(.)/g, function (matched, p1, p2, p3, p4) {
+            return p1 || p2 || p3 || p4;
+        }));
+    }
 
-        //console.log(arr);
+    function regexEscape(s) {
+        return s.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+    }
 
-        if (arr[0].length == 0)
-            return '\n'; // default, no line breaks
-        if (arr[0].length == arr[1].length) // mixed line breaks
-            return arr[0].data[0].length <= arr[1].data[0].length ? arr[0].type : arr[1].type; // use first occurrence
+    // export
 
-        return arr[0].type;
+    function isDate(dateString, formatString) {
+        if (getDate(dateString, formatString) === 'NaD') {
+            return false;
+        }
+        return true;
+    }
+
+
+    function getDate(dateString, formatString) {
+        dateString = '' + dateString;
+
+        let formattingTokens = /(\[[^\[]*\])|(\\)?(yyyy|yy|mm|m|dd|d|HH|H|MM|M|SS|S|.)/g;
+        //let formattingTokens = /(\[[^\[]*\])|(\\)?([Hh]mm(ss)?|Mo|mm?m?m?|Do|DDDo|dd?d?d?|ddd?d?|do?|w[o|w]?|W[o|W]?|Qo?|YYYYYY|YYYYY|yyyy|yy|gg(ggg?)?|GG(GGG?)?|e|E|a|A|hh?|HH?|kk?|mm?|ss?|S{1,9}|x|X|zz?|ZZ?|.)/g;
+        let tokens = formatString.match(formattingTokens) || [];
+        let second = 0, minute = 0, hour = 0, day, month, year;
+        let regex;
+
+        for (let i = 0; i < tokens.length; i++) {
+            let token = tokens[i];
+
+            if (token === 'd' || token === 'm' || token === 'H' || token === 'M' || token === 'S') {
+                regex = /\d\d?/;
+            } else if (token === 'dd' || token === 'mm' || token === 'yy' || token === 'HH' || token === 'MM' || token === 'SS') {
+                regex = /\d\d/;
+            } else if (token === 'yyyy') {
+                regex = /\d{4}/;
+            } else {
+                regex = new RegExp(unescapeFormat(token));
+            }
+
+            let parsedInput = (dateString.match(regex) || [])[0];
+
+            if (parsedInput) {
+                dateString = dateString.slice(dateString.indexOf(parsedInput) + parsedInput.length);
+
+                //console.log(parsedInput);
+
+                if (token === 'S' || token === 'SS') {
+                    second = Number(parsedInput);
+                } else if (token === 'M' || token === 'MM') {
+                    minute = Number(parsedInput);
+                } else if (token === 'H' || token === 'HH') {
+                    hour = Number(parsedInput);
+                } else if (token === 'd' || token === 'dd') {
+                    day = Number(parsedInput);
+                } else if (token === 'm' || token === 'mm') {
+                    month = Number(parsedInput) - 1;
+                } else if (token === 'yy') {
+                    year = parseTwoDigitYear(parsedInput);
+                } else if (token === 'yyyy') {
+                    year = parsedInput.length === 2 ? parseTwoDigitYear(parsedInput) : Number(parsedInput);
+                }
+            }
+        }
+
+        if (!year || !month || !day || checkOverflow(year, month, day, hour, minute, second)) {
+            return 'NaD';
+        } else {
+            return new Date(Date.UTC(year, month, day, hour, minute, second));
+        }
+    }
+
+    function detectDecimalDelimiter(input) {
+        input = input.trim();
+
+        let c = input.split(',').length - 1;
+
+        if (c > 1) return '.'; // '123,456,789' or '123,456,789.12'
+        if (input.indexOf(' ') >= 0) return ','; // '123 456'
+        if (input.indexOf('،') >= 0) return '.'; // '123،456'
+        if (input.indexOf('\'') >= 0) return '.'; // '123\'456'
+
+        let d = input.split('.').length - 1;
+        if (c === 1 && d === 1) { // '123,456.789' or '1.234,45'
+            let ci = input.lastIndexOf(',');
+            let di = input.lastIndexOf('.');
+            if (di > ci) return '.';
+            else return ',';
+        }
+
+        if (c + d === 1) {
+            let ci = input.indexOf(',');
+            let di = input.indexOf('.');
+            let len = input.length;
+
+            if (ci !== -1 && len - ci !== 4) return ',';
+            if (di !== -1 && len - di !== 4) return '.';
+        }
+
+        return 'ambiguous';
+    }
+
+    // default delimiter '.'
+    function findDecimal(output) {
+        for (let i = 0; i < output.length; i++) {
+            for (let j = 0; j < output[i].length; j++) {
+                if (/^[0-9.,' ،-]+$/.test(output[i][j])) {
+                    let delimiter = detectDecimalDelimiter(output[i][j]);
+                    if (delimiter !== 'ambiguous') {
+                        return delimiter;
+                    }
+                }
+            }
+        }
+        return '.';
     }
 
     function unionOptions(defaultOptions, options) {
         for (let prop in options) {
             if (typeof options[prop] === 'object') {
                 if (typeof defaultOptions[prop] !== 'undefined') {
-                    unionOptions(defaultOptions[prop], options[prop])
+                    unionOptions(defaultOptions[prop], options[prop]);
                 }
             } else {
                 defaultOptions[prop] = options[prop];
@@ -228,12 +336,15 @@
         return out;
     }
 
+    const RECORD_SEP = String.fromCharCode(30);
+    const UNIT_SEP = String.fromCharCode(31);
+
     function detectDelimiter(data, lineEnding) {
         let delimiters = [',', ';', '\t', '|', RECORD_SEP, UNIT_SEP];
         let res = [];
 
         for (let i = 0; i < delimiters.length; i++) {
-            let example = parse(data, {delimiter: delimiters[i], lineEnding: lineEnding, maxRows: 10});
+            let example = parse(data, { delimiter: delimiters[i], lineEnding: lineEnding, maxRows: 10 });
             //console.log(example);
             let fields = 0, first = 0, delta = 1000;
             let firstRow = false, secondRow = false;
@@ -279,49 +390,30 @@
         return delimiters[res[0][3]];
     }
 
-    function detectDecimalDelimiter(input) {
-        input = input.trim();
+    function detectLineEnding(data) {
+        data = data.substr(0, 1024 * 1024);	// max length 1 MB
 
-        let c = input.split(',').length - 1;
+        data = data.replace(/"[^"]*"/g, ''); // replace all quoted fields
 
-        if (c > 1) return '.'; // '123,456,789' or '123,456,789.12'
-        if (input.indexOf(' ') >= 0) return ','; // '123 456'
-        if (input.indexOf('،') >= 0) return '.'; // '123،456'
-        if (input.indexOf('\'') >= 0) return '.'; // '123\'456'
+        //console.log(data);
 
-        let d = input.split('.').length - 1;
-        if (c === 1 && d === 1) { // '123,456.789' or '1.234,45'
-            let ci = input.lastIndexOf(',');
-            let di = input.lastIndexOf('.');
-            if (di > ci) return '.';
-            else return ',';
-        }
+        let n = data.split('\n');
+        let r = data.split('\r');
+        let rn = data.split('\r\n');
 
-        if (c + d === 1) {
-            let ci = input.indexOf(',');
-            let di = input.indexOf('.');
-            let len = input.length;
+        let arr = [{ type: '\n', data: n, length: n.length - rn.length }, { type: '\r', data: r, length: r.length - rn.length }, { type: '\r\n', data: rn, length: rn.length - 1 }];
+        arr.sort(function (a, b) {
+            return b.length - a.length;
+        });
 
-            if (ci !== -1 && len - ci !== 4) return ',';
-            if (di !== -1 && len - di !== 4) return '.';
-        }
+        //console.log(arr);
 
-        return 'ambiguous';
-    }
+        if (arr[0].length == 0)
+            return '\n'; // default, no line breaks
+        if (arr[0].length == arr[1].length) // mixed line breaks
+            return arr[0].data[0].length <= arr[1].data[0].length ? arr[0].type : arr[1].type; // use first occurrence
 
-    // default delimiter '.'
-    function findDecimal(output) {
-        for (let i = 0; i < output.length; i++) {
-            for (let j = 0; j < output[i].length; j++) {
-                if (/^[0-9.,' ،-]+$/.test(output[i][j])) {
-                    let delimiter = detectDecimalDelimiter(output[i][j]);
-                    if (delimiter !== 'ambiguous') {
-                        return delimiter;
-                    }
-                }
-            }
-        }
-        return '.';
+        return arr[0].type;
     }
 
     function csvparse(data, options) {
@@ -375,8 +467,8 @@
                         output[i][j] = true;
                     } else if (value === 'false' || value === 'FALSE') { // Boolean
                         output[i][j] = false;
-                    } else if (moment(value, options.convertToTypes.dateFormat, true).isValid()) { // Date
-                        output[i][j] = moment.utc(value, options.convertToTypes.dateFormat, true).toDate();
+                    } else if (isDate(value, options.convertToTypes.dateFormat)) { // Date
+                        output[i][j] = getDate(value, options.convertToTypes.dateFormat);
                     } else if (/[0-9]{2}\.[0-9]{2}\./.test(value)) { // maybe a date, eg. 01.01.
                         ; // do nothing
                     } else {
@@ -395,4 +487,5 @@
     }
 
     return csvparse;
+
 }));
