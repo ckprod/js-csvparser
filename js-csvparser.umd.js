@@ -51,7 +51,7 @@
         let formattingTokens = /(\[[^\[]*\])|(\\)?(yyyy|yy|mm|m|dd|d|HH|H|MM|M|SS|S|.)/g;
         //let formattingTokens = /(\[[^\[]*\])|(\\)?([Hh]mm(ss)?|Mo|mm?m?m?|Do|DDDo|dd?d?d?|ddd?d?|do?|w[o|w]?|W[o|W]?|Qo?|YYYYYY|YYYYY|yyyy|yy|gg(ggg?)?|GG(GGG?)?|e|E|a|A|hh?|HH?|kk?|mm?|ss?|S{1,9}|x|X|zz?|ZZ?|.)/g;
         let tokens = formatString.match(formattingTokens) || [];
-        let second = 0, minute = 0, hour = 0, day, month, year;
+        let second = 0, minute = 0, hour = 0, day = null, month = null, year = null;
         let regex;
 
         for (let i = 0; i < tokens.length; i++) {
@@ -92,7 +92,7 @@
             }
         }
 
-        if (!year || !month || !day || checkOverflow(year, month, day, hour, minute, second)) {
+        if (year===null || month===null || day===null || checkOverflow(year, month, day, hour, minute, second)) {
             return 'NaD';
         } else {
             return new Date(Date.UTC(year, month, day, hour, minute, second));
