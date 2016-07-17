@@ -70,6 +70,12 @@
             let parsedInput = (dateString.match(regex) || [])[0];
 
             if (parsedInput) {
+                // don't parse dates within text strings
+                let skipped = dateString.substr(0, dateString.indexOf(parsedInput));
+                if (skipped.length > 0) {
+                    return 'NaD';
+                }
+
                 dateString = dateString.slice(dateString.indexOf(parsedInput) + parsedInput.length);
 
                 //console.log(parsedInput);
@@ -425,7 +431,7 @@
             convertToTypes: {
                 convert: false,
                 decimalDelimiter: 'auto',
-                dateFormat: 'YYYY-MM-DD'
+                dateFormat: 'yyyy-mm-dd'
             },
             skipEmptyLines: false,
             maxRows: 0,

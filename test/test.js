@@ -698,6 +698,15 @@ var CSVPARSER_TESTS = [
 			data: [ [ new Date(Date.UTC(2015,11,31)), 21689, '01.01.', -1257.46 ] ],
 			errors: []
 		}
+	},
+	{
+		description: 'don\'t convert dates within text strings',
+		input: 'some text 20.07.15',
+		config: { convertToTypes: { convert: true, dateFormat: 'dd.mm.yy' } },
+		expected: {
+			data: [ [ 'some text 20.07.15' ] ],
+			errors: []
+		}
 	}
 ];
 
