@@ -5,9 +5,6 @@
 const assert = require('assert');
 const csvparse = require('../js-csvparser.umd.js');
 
-
-console.log(csvparse('31.12.2015;21689;01.01.;1.257,46-',{ convertToTypes: { convert: true, dateFormat: 'DD.MM.YYYY' } }));
-
 const RECORD_SEP = String.fromCharCode(30);
 const UNIT_SEP = String.fromCharCode(31);
 
@@ -107,6 +104,7 @@ var CSVPARSER_TESTS = [
 	{
 		description: 'Dynamic typing converts numeric literals',
 		input: '1,2.2,1e3\r\n-4,-4.5,-4e-5\r\n-,5a,5-2',
+		config: { convertToTypes: { convert: true } },
 		expected: {
 			data: [[1, 2.2, 1000], [-4, -4.5, -0.00004], ['-', '5a', '5-2']],
 			errors: []
@@ -115,7 +113,7 @@ var CSVPARSER_TESTS = [
 	{
 		description: 'Dynamic typing converts boolean literals',
 		input: 'true,false,T,F,TRUE,FALSE,True,False',
-        config: { convertToTypes: { convert: true }, },
+        config: { convertToTypes: { convert: true } },
 		expected: {
 			data: [[true, false, 'T', 'F', true, false, 'True', 'False']],
 			errors: []
@@ -223,7 +221,7 @@ var CSVPARSER_TESTS = [
 	{
 		description: 'Preview all (3) rows',
 		input: 'a,b,c\r\nd,e,f\r\ng,h,i',
-		config: { lines: 3 },
+		config: { maxRows: 3 },
 		expected: {
 			data: [['a', 'b', 'c'], ['d', 'e', 'f'], ['g', 'h', 'i']],
 			errors: []
@@ -232,7 +230,7 @@ var CSVPARSER_TESTS = [
 	{
 		description: 'Preview more rows than input has',
 		input: 'a,b,c\r\nd,e,f\r\ng,h,i',
-		config: { lines: 4 },
+		config: { maxRows: 4 },
 		expected: {
 			data: [['a', 'b', 'c'], ['d', 'e', 'f'], ['g', 'h', 'i']],
 			errors: []
@@ -241,7 +239,7 @@ var CSVPARSER_TESTS = [
 	{
 		description: 'Preview should count rows, not lines',
 		input: 'a,b,c\r\nd,e,"f\r\nf",g,h,i',
-		config: { lines: 2 },
+		config: { maxRows: 2 },
 		expected: {
 			data: [['a', 'b', 'c'], ['d', 'e', 'f\r\nf', 'g', 'h', 'i']],
 			errors: []
@@ -705,6 +703,22 @@ var CSVPARSER_TESTS = [
 		config: { convertToTypes: { convert: true, dateFormat: 'dd.mm.yy' } },
 		expected: {
 			data: [ [ 'some text 20.07.15' ] ],
+			errors: []
+		}
+	},
+	{
+		description: 'one header row',
+		input: 'd;n;d;n\n31.12.10;21689;01/01/01;1.257,46-',
+		expected: {
+			data: [ [ '31.12.10','21689','01/01/01','1.257,46-' ] ],
+			errors: []
+		}
+	},
+	{
+		description: 'multiple header rows',
+		input: 'd1;n1;d1;n1\nd2;n2;d2;n2\n31 12 15;21689;01-01-16;1.257,46-',
+		expected: {
+			data: [ [ '31 12 15','21689','01-01-16','1.257,46-' ] ],
 			errors: []
 		}
 	}

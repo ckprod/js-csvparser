@@ -13,7 +13,7 @@ Fast and feature rich CSV parser with great auto detection for line ending and d
 // A simple echo program:
 const csvparse = require('js-csvparser');
 
-console.log(csvparse('\r\na,b,c\r\nd,e,f'));
+console.log(csvparse('h1,h2,h3\r\n1,2,3\r\n4,5,6'));
 ```
 
 If you don't want to use default options, pass in an options object as second parameter.
@@ -33,10 +33,11 @@ let defaultOptions = {
     maxColumns: {
         numberOfColumns: -1,
         cutRemaining: false
-    }
+    },
+    header: 'auto'
 };
 
-console.log(csvparse('\r\na,b,c\r\nd,e,f', defaultOptions));
+console.log(csvparse('h1,h2,h3\r\n1,2,3\r\n4,5,6', defaultOptions));
 ```
 
 ###Node.js Installation
@@ -49,6 +50,7 @@ Current version should work with all Node.js versions, at least with version 4 a
 
 - Easy to use
 - Great auto detection for line ending and delimiter
+- Can handle header rows with simple auto detection
 - Configurable delimiter, line ending and comment character
 - Can handle empty lines, even at the beginning
 - Ignores lines starting with comment character
@@ -93,6 +95,7 @@ let defaultOptions = {
         // S SS | Seconds           | 0..59
         dateFormat: 'yyyy-mm-dd'
     },
+
     // If true, lines that are completely empty will be skipped. An empty 
     // line is defined to be one which evaluates to empty string.
     skipEmptyLines: false,
@@ -111,7 +114,12 @@ let defaultOptions = {
         // will contain the remaining data of the parsed row, otherwise the 
         // remaining data of the row will be omitted.
         cutRemaining: false
-    }
+    },
+
+    // One of 'auto', true (meaning one header row), false (no header row) or
+    // any non negative number (meaning the number of header rows). In the case 
+    // of 'auto', js-csvparser is try its best to detect the number of header rows.
+    header: 'auto'
 };
  ```
 
