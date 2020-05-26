@@ -7,7 +7,7 @@ js-csvparser (Javascript CSV Parser)
 
 Fast and feature rich CSV parser with great auto detection for line ending and delimiter. It can be used as node module or in the browser. It is completely independent from other javascript libraries but should work side-by-side with any other library.
 
-###Usage
+### Usage
 
 ```javascript
 // A simple echo program:
@@ -40,13 +40,13 @@ let defaultOptions = {
 console.log(csvparse('h1,h2,h3\r\n1,2,3\r\n4,5,6', defaultOptions));
 ```
 
-###Node.js Installation
+### Node.js Installation
 
 `npm install js-csvparser`
 
 Current version should work with all Node.js versions, at least with version 4 and above.
 
-###Features
+### Features
 
 - Easy to use
 - Great auto detection for line ending and delimiter
@@ -58,7 +58,7 @@ Current version should work with all Node.js versions, at least with version 4 a
 - Very fast (each character will be accessed only once, despite the usual access for the output data)
 - Can convert numbers, booleans and dates to their types
 
-###Options
+### Options
 
 You can set different options for parsing the data.
 ```javascript
@@ -123,7 +123,7 @@ let defaultOptions = {
 };
  ```
 
-###References
+### References
 
 Several other good csvparser with slightly different features were used as guideline:
 
